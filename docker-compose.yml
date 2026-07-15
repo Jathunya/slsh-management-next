@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: slsh
+      POSTGRES_PASSWORD: slsh_dev_password
+      POSTGRES_DB: slsh_tracker
+    ports:
+      - "5433:5432"
+    volumes:
+      - slsh_pgdata:/var/lib/postgresql
+
+volumes:
+  slsh_pgdata:

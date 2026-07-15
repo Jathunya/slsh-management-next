@@ -1,0 +1,176 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  RESIDENT
+}
+
+enum Occupancy {
+  OWNER
+  TENANT
+}
+
+enum ParcelStatus {
+  PENDING
+  DELIVERED
+}
+
+enum BillStatus {
+  UNPAID
+  PAID
+}
+
+enum MessageStatus {
+  SENT
+  READ
+}
+
+enum NotificationKind {
+  PARCEL_ARRIVED
+  BILL_CREATED
+  BILL_PAID
+  MESSAGE
+}
+
+model User {
+  id             String         @id @default(cuid())
+  email          String         @unique
+  passwordHash   String
+  name           String
+  role           Role           @default(RESIDENT)
+  phone          String?
+  unit           Unit?          @relation(fields: [unitId], references: [id])
+  unitId         String?
+  parcels        Parcel[]       @relation("recipient")
+  messages       Message[]
+  notifications  Notification[]
+  createdAt      DateTime       @default(now())
+
+  @@index([unitId])
+}
+
+model Unit {
+  id            String    @id @default(cuid())
+  number        String    @unique
+  floor         Int
+  occupancy     Occupancy @default(OWNER)
+  contractStart DateTime?
+  contractEnd   DateTime?
+  users         User[]
+  parcels       Parcel[]
+  bills         Bill[]
+  vehicles      Vehicle[]
+  thread        Thread?
+  createdAt     DateTime  @default(now())
+}
+
+model Parcel {
+  id          String       @id @default(cuid())
+  pid         String       @unique
+  tracking    String
+  carrier     String
+  type        String
+  size        String
+  status      ParcelStatus @default(PENDING)
+  unit        Unit         @relation(fields: [unitId], references: [id])
+  unitId      String
+  recipient   User         @relation("recipient", fields: [recipientId], references: [id])
+  recipientId String
+  checkInAt   DateTime     @default(now())
+  checkOutAt  DateTime?
+
+  @@index([unitId, status])
+}
+
+model Bill {
+  id        String     @id @default(cuid())
+  unit      Unit       @relation(fields: [unitId], references: [id])
+  unitId    String
+  type      String
+  period    String
+  amount    Decimal    @db.Decimal(10, 2)
+  dueDate   DateTime
+  status    BillStatus @default(UNPAID)
+  paidAt    DateTime?
+  payment   Payment?
+  createdAt DateTime   @default(now())
+
+  @@index([unitId, status])
+}
+
+model Payment {
+  id        String   @id @default(cuid())
+  bill      Bill     @relation(fields: [billId], references: [id])
+  billId    String   @unique
+  amount    Decimal  @db.Decimal(10, 2)
+  method    String
+  paidAt    DateTime @default(now())
+}
+
+model Vehicle {
+  id     String @id @default(cuid())
+  unit   Unit   @relation(fields: [unitId], references: [id])
+  unitId String
+  plate  String
+}
+
+model Thread {
+  id        String    @id @default(cuid())
+  unit      Unit      @relation(fields: [unitId], references: [id])
+  unitId    String    @unique
+  messages  Message[]
+  updatedAt DateTime  @updatedAt
+}
+
+model Message {
+  id        String        @id @default(cuid())
+  thread    Thread        @relation(fields: [threadId], references: [id])
+  threadId  String
+  sender    User          @relation(fields: [senderId], references: [id])
+  senderId  String
+  body      String
+  status    MessageStatus @default(SENT)
+  createdAt DateTime      @default(now())
+
+  @@index([threadId, createdAt])
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  user      User             @relation(fields: [userId], references: [id])
+  userId    String
+  kind      NotificationKind
+  body      String
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  @@index([userId, read])
+}
+
+model Asset {
+  id             String          @id @default(cuid())
+  serial         String          @unique
+  name           String
+  category       String
+  location       String
+  value          Decimal         @db.Decimal(10, 2)
+  condition      String
+  maintenanceLog MaintenanceLog[]
+  createdAt      DateTime        @default(now())
+}
+
+model MaintenanceLog {
+  id         String   @id @default(cuid())
+  asset      Asset    @relation(fields: [assetId], references: [id])
+  assetId    String
+  note       String
+  cost       Decimal  @db.Decimal(10, 2)
+  servicedAt DateTime @default(now())
+}

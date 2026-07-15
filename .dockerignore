@@ -1,0 +1,22 @@
+node_modules
+.next
+.git
+.gitignore
+
+# env files — pass secrets at runtime via -e / --env-file, never bake them in
+.env
+.env.*
+!.env.example
+
+# local dev artifacts
+dev.log
+npm-debug.log*
+*.tsbuildinfo
+
+# editor / OS
+.vscode
+.idea
+.DS_Store
+
+# docs
+README.md
