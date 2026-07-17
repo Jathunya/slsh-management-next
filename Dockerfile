@@ -44,9 +44,14 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # copy it explicitly so the standalone server can reach the database.
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=builder /app/src/prisma/schema.prisma ./src/prisma/schema.prisma
+# Prisma CLI, needed at startup to run `migrate deploy` against the real DB
+# (only `prisma generate` ran at build time, against a dummy DATABASE_URL).
+COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
+COPY --from=builder /app/src/prisma ./src/prisma
 
 USER nextjs
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+# Apply any pending migrations before starting — safe to run on every boot,
+# it only applies migrations that haven't run yet and never touches data.
+CMD ["sh", "-c", "node node_modules/prisma/build/index.js migrate deploy --schema=src/prisma/schema.prisma && node server.js"]
