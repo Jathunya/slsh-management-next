@@ -152,6 +152,22 @@ npm run dev
 
 ---
 
+## Demo Credentials
+
+Use one of the following accounts to access the dashboard:
+
+| Role          | Email                | Password     |
+|---------------|-----------------------|---------------|
+| Admin Access  | `admin@slsh.dev`      | `PasswOrd!`   |
+| User Access   | `nattapong@slsh.dev`  | `PasswOrd!`   |
+
+**How to Login**
+
+1. Enter your chosen email and the password above into the respective fields.
+2. Click the **Sign in** button to proceed to the main dashboard.
+
+---
+
 ## Project Structure
 
 ```
