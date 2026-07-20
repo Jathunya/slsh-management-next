@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="132" height="132" viewBox="0 0 132 132" role="img" aria-label="SLSH logo">
+  <circle cx="66" cy="66" r="62" fill="none" stroke="#E2E8F0" stroke-width="2"/>
+  <circle cx="66" cy="66" r="62" fill="none" stroke="#2A6FDB" stroke-width="3" stroke-linecap="round" stroke-dasharray="70 320"/>
+  <rect x="20" y="20" width="92" height="92" rx="26" fill="#2A6FDB"/>
+  <svg x="40" y="40" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 10.4 12 4l8 6.4V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-9.6z"/>
+    <path d="M12 17.6c-1.7-1.15-2.9-2.15-2.9-3.4a1.55 1.55 0 0 1 2.9-.78 1.55 1.55 0 0 1 2.9.78c0 1.25-1.2 2.25-2.9 3.4z" fill="#ffffff" stroke="none"/>
+  </svg>
+</svg>

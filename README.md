@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="public/slsh-logo.svg" width="96" height="96" alt="SLSH logo" />
+
 # SLSH
 ### *Smooth · Live · Sweet · Home*
 
@@ -158,8 +160,8 @@ Use one of the following accounts to access the dashboard:
 
 | Role          | Email                | Password     |
 |---------------|-----------------------|---------------|
-| Admin Access  | `admin@slsh.dev`      | `PasswOrd!`   |
-| User Access   | `nattapong@slsh.dev`  | `PasswOrd!`   |
+| Admin Access  | `admin@slsh.dev`      | `Passw0rd!`   |
+| User Access   | `nattapong@slsh.dev`  | `Passw0rd!`   |
 
 **How to Login**
 
