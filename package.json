@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "db:migrate": "prisma migrate dev --schema=src/prisma/schema.prisma",
     "db:seed": "node src/prisma/seed.mjs",
     "db:studio": "prisma studio --schema=src/prisma/schema.prisma"
@@ -31,10 +33,15 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@tanstack/react-query-devtools": "^5.101.2",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@vitejs/plugin-react": "^6.0.3",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
+    "jsdom": "^29.1.1",
     "prisma": "^6.19.3",
-    "tailwindcss": "^4"
+    "tailwindcss": "^4",
+    "vitest": "^4.1.10"
   },
   "prisma": {
     "schema": "src/prisma/schema.prisma",

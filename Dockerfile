@@ -7,6 +7,18 @@ RUN apk add --no-cache libc6-compat
 COPY package.json package-lock.json ./
 RUN npm ci --fetch-timeout=600000 --fetch-retries=5 --fetch-retry-maxtimeout=120000
 
+# ---------- prod-deps: production-only node_modules for the Prisma CLI at runtime ----------
+# Next's output tracing (.next/standalone) only captures what the server needs to
+# handle requests (@prisma/client), not the `prisma` CLI used by `migrate deploy`
+# below. The CLI's dependency tree (@prisma/config -> effect, c12, ...) is deep and
+# shifts across Prisma releases, so install it properly here instead of hand-picking
+# folders.
+FROM node:20-alpine AS prod-deps
+WORKDIR /app
+RUN apk add --no-cache libc6-compat
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev --fetch-timeout=600000 --fetch-retries=5 --fetch-retry-maxtimeout=120000
+
 # ---------- builder: generate prisma client + build the app ----------
 FROM node:20-alpine AS builder
 WORKDIR /app
@@ -40,14 +52,12 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Prisma's query engine binary is sometimes missed by Next's output tracing —
-# copy it explicitly so the standalone server can reach the database.
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-# Prisma CLI, needed at startup to run `migrate deploy` against the real DB
+# Full production node_modules (Prisma CLI + its transitive deps) for `migrate
+# deploy` at startup, then overlay the generated client/engine from the builder
 # (only `prisma generate` ran at build time, against a dummy DATABASE_URL).
-COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
-COPY --from=builder /app/src/prisma ./src/prisma
+COPY --from=prod-deps --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder --chown=nextjs:nodejs /app/src/prisma ./src/prisma
 
 USER nextjs
 EXPOSE 3000
